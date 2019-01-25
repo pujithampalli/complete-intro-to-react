@@ -1,49 +1,29 @@
+// @flow
 import React, { Component } from "react";
-import preload from "../data.json";
+import { connect } from "react-redux";
 import ShowCards from "./ShowCard";
+import Header from "./Header";
 
-class Search extends Component {
-  //   constructor(props) {
-  //     super(props);
-  //     this.state = {
-  //       searchTerm: "this is some sort of debug statement"
-  //     };
-  //     this.state.handleSearchTermChange = this.handleSearchTermChange.bind(this);
-  //   }
-  state = {
-    searchTerm: ""
-  };
-  handleSearchTermChange = event => {
-    // debugger;
-    this.setState({ searchTerm: event.target.value });
-  };
+const Search = (props: {
+  searchTerm: string, // eslint-disable-line react/no-unused-prop-types
+  shows: Array<Show>
+}) => (
+  <div className="search">
+    {/* <pre><code>{JSON.stringify(preload, null, 4)}</code></pre> */}
+    <Header showSearch />
+    <div>
+      {props.shows
+        .filter(
+          show =>
+            `${show.description} ${show.title}`
+              .toUpperCase()
+              .indexOf(props.searchTerm.toUpperCase()) >= 0
+        )
+        .map(show => <ShowCards key={show.imdbID} {...show} />)}
+    </div>
+  </div>
+);
 
-  render() {
-    return (
-      <div className="search">
-        {/* <pre><code>{JSON.stringify(preload, null, 4)}</code></pre> */}
-        <header>
-          <h1>{this.state.searchTerm}</h1>
-          <input
-            value={this.state.searchTerm}
-            onChange={this.handleSearchTermChange}
-            type="text"
-            placeholder="Search"
-          />
-        </header>
-        <div>
-          {preload.shows
-            .filter(
-              show =>
-                `${show.description} ${show.title}`
-                  .toUpperCase()
-                  .indexOf(this.state.searchTerm.toUpperCase()) >= 0
-            )
-            .map(show => <ShowCards key={show.imdbID} {...show} />)}
-        </div>
-      </div>
-    );
-  }
-}
+const mapStateToProps = state => ({ searchTerm: state.searchTerm });
 
-export default Search;
+export default connect(mapStateToProps)(Search);
